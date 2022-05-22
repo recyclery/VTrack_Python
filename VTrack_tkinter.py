@@ -5,57 +5,61 @@ Basic tkinter-based python script that allows volunteers to log in and
 to register new volunteers. This should also easily export summaries of
 volunteer hours and potentially send a monthly summary of the hours
 to the volunteer coordinator.
-
-
-
 '''
 
-# import what we need
 import numpy as np
 import pandas as pd
 import sqlite3
-from sqlalchemy import create_engine
 import tkinter as tk
+
+from tkinter import ttk
+from sqlalchemy import create_engine
 from PIL import ImageTk
-# from tkinter import ttk
-
+from volunteer import Volunteer
 from datetime import datetime
-
-
-
-# start up the tkinter 
-b_tk = tk.Tk
-
 
 # main application definition
 # todo: - add additional widgets (sign in widget, create user widget etc)
 #       - read from sqlite database (see below for some basic SQL queries)
-class Application(tk.Frame):
-    def __init__(self, master=None):
-        tk.Frame.__init__(self, master)
-        self.grid(padx= 10, pady = 10)
+class App(tk.Tk):
+    
+    def __init__(self):
+        super().__init__()
+
+        self.geometry("800x800")
+        self.title('VTrack')
+        self.resizable(0, 0)
+
+        # configure the grid
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=3)
+
         self.createWidgets()
 
     def createWidgets(self):
-        # banner
-        self.banner = tk.Canvas(master=self)
-        self.banner.pack(expand=tk.YES)
+        self.volunteer_frame = ttk.Frame(self)
+        self.volunteer_frame.grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
+        self.populate_volunteers()
+
         with ImageTk.Image.open('./logos/TWFT-logo-fb-01.png').resize([200,200]) as im:
             logo = ImageTk.PhotoImage(im)
-        self.logo = logo
-        self.banner.create_image(0, 0, anchor=tk.NW, image=self.logo)
-        self.banner.grid(padx=10, pady = 10, column=0, row= 0)
+        
+        img_label = ttk.Label(self, image=logo)
+        img_label.image = logo
+        img_label.grid(column=1, row=0, sticky=tk.E, padx=5, pady=5)
 
-        # 
+    def populate_volunteers(self):
+        # Temporary - replace with sqlite querying 
+        temp_volunteer_list = ['Nathan Mack', 'Joe Bob', 'Bob Joe', 'Jill Franks', 'Rusty Fender', 'Broken Derailleur']
+        
+        for idx, volunteer in enumerate(temp_volunteer_list):
+            name = volunteer.split()
+            volunteer_label = Volunteer(self.volunteer_frame, name[0], name[1], None).label
+            volunteer_label.grid(column=0, row=idx, sticky=tk.W, padx=5, pady=5)
 
-# instantiation
-app = Application()
-app.master.title('Sample Application')
-app.mainloop()
-
-datetime.now()
-
-
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
 
 ### helpful sqlite commands ###
 # 
