@@ -26,35 +26,53 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("800x800")
+        self.width = tk.Tk.winfo_screenwidth(self)
+        self.height = tk.Tk.winfo_screenheight(self)
+
+        self.geometry(str(self.width) + 'x' + str(self.height))
         self.title('VTrack')
         self.resizable(0, 0)
 
-        # configure the grid
-        self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=3)
+        # grid column config
+        # self.columnconfigure(0, weight=1)
+        # self.columnconfigure(1, weight=1)
+        # self.columnconfigure(2, weight=1)
 
         self.createWidgets()
 
     def createWidgets(self):
-        self.volunteer_frame = ttk.Frame(self)
-        self.volunteer_frame.grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
-        self.populate_volunteers()
+        # Generates the user I/O
+        self.user_io_frame = ttk.Frame(self)
+        self.user_io_frame.grid(column=0, row=0, sticky=tk.W, padx=5, pady=5)
+        self.generate_user_io_frame(self.user_io_frame)
 
-        with ImageTk.Image.open('./logos/TWFT-logo-fb-01.png').resize([200,200]) as im:
+        # Populates a list of currently signed in volunteers
+        # TODO integrate this in w/ a sign in feature
+        self.volunteer_frame = ttk.Frame(self)
+        self.volunteer_frame.grid(column=1, row=0, sticky=tk.W, padx=5, pady=5)
+        self.populate_volunteers_frame(self.volunteer_frame)
+    
+    def generate_user_io_frame(self, parent_frame):
+        register_button = ttk.Button(parent_frame, text='Register', default='active', command=None)
+        register_button.grid(column=0, row=0, sticky=(tk.W, tk.N, tk.E, tk.S), padx=5, pady=5)
+        
+        sign_in_button = ttk.Button(parent_frame, text='Sign In', default='active', command=None)
+        sign_in_button.grid(column=0, row=1, sticky=(tk.W, tk.N, tk.E, tk.S), padx=5, pady=5)
+        
+        with ImageTk.Image.open('./logos/TWFT-logo-fb-01.png').resize([400,400]) as im:
             logo = ImageTk.PhotoImage(im)
         
-        img_label = ttk.Label(self, image=logo)
+        img_label = ttk.Label(parent_frame, image=logo)
         img_label.image = logo
-        img_label.grid(column=1, row=0, sticky=tk.E, padx=5, pady=5)
+        img_label.grid(column=0, row=3, sticky=tk.E, padx=5, pady=5)
 
-    def populate_volunteers(self):
+    def populate_volunteers_frame(self, parent_frame):
         # Temporary - replace with sqlite querying 
         temp_volunteer_list = ['Nathan Mack', 'Joe Bob', 'Bob Joe', 'Jill Franks', 'Rusty Fender', 'Broken Derailleur']
         
         for idx, volunteer in enumerate(temp_volunteer_list):
             name = volunteer.split()
-            volunteer_label = Volunteer(self.volunteer_frame, name[0], name[1], None).label
+            volunteer_label = Volunteer(parent_frame, name[0], name[1], None).label
             volunteer_label.grid(column=0, row=idx, sticky=tk.W, padx=5, pady=5)
 
 if __name__ == "__main__":
